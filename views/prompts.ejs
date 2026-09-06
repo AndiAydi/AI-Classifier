@@ -1,0 +1,57 @@
+<%- include('partials/header') %>
+
+<div class="page-header">
+  <div>
+    <h1>System Prompt Editor</h1>
+    <p class="page-lede">Versi prompt yang aktif menentukan perilaku classifier. Edit dan aktivasi untuk switch.</p>
+  </div>
+  <div class="page-actions">
+    <button class="btn btn-primary" onclick="newPrompt()">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>
+      </svg>
+      Prompt Baru
+    </button>
+  </div>
+</div>
+
+<div class="prompt-layout">
+  <!-- List of prompts -->
+  <div class="prompt-list" id="promptList">
+    <div class="empty">Loading prompts...</div>
+  </div>
+
+  <!-- Editor -->
+  <div class="card">
+    <div class="card-header">
+      <h3 id="editorTitle">Editor</h3>
+      <span class="card-meta" id="editorStatus"></span>
+    </div>
+
+    <div class="form-row">
+      <div>
+        <label class="label">Nama</label>
+        <input type="text" id="promptName" class="input" placeholder="default | strict | lenient" />
+      </div>
+      <div>
+        <label class="label">Versi</label>
+        <input type="text" id="promptVersion" class="input" placeholder="v2.1" />
+      </div>
+    </div>
+
+    <label class="label" style="margin-top: 14px;">Catatan (opsional)</label>
+    <input type="text" id="promptNotes" class="input" placeholder="Apa yang berubah dari versi sebelumnya?" />
+
+    <label class="label" style="margin-top: 14px;">Konten System Prompt</label>
+    <textarea id="promptContent" class="textarea mono" rows="20" placeholder="# AI-Classifier..."></textarea>
+
+    <div class="action-row">
+      <button class="btn btn-primary" onclick="savePrompt()">Simpan</button>
+      <button class="btn btn-secondary" onclick="resetEditor()">Reset</button>
+    </div>
+  </div>
+</div>
+
+<%- include('partials/footer') %>
+
+<script src="/js/prompts.js"></script>

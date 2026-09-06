@@ -1,0 +1,139 @@
+<%- include('partials/header') %>
+
+<div class="page-header">
+  <div>
+    <h1>Comment Detail</h1>
+    <p class="page-lede">Review dan override klasifikasi. Perubahan tercatat di <code>human_override</code>.</p>
+  </div>
+  <div class="page-actions">
+    <a href="/" class="btn btn-secondary">← Kembali</a>
+  </div>
+</div>
+
+<div class="card" id="commentCard">
+  <div class="empty">Loading comment...</div>
+</div>
+
+<%- include('partials/footer') %>
+
+<script>
+  const commentId = "<%= commentId %>";
+
+  async function load() {
+    try {
+      const r = await fetch(`/api/comments/${commentId}`);
+      const { ok, data, error } = await r.json();
+      if (!ok) {
+        document.getElementById("commentCard").innerHTML = `<div class="empty">Error: ${error}</div>`;
+        return;
+      }
+      render(data);
+    } catch (e) {
+      document.getElementById("commentCard").innerHTML = `<div class="empty">Failed: ${e.message}</div>`;
+    }
+  }
+
+  function render(c) {
+    const card = document.getElementById("commentCard");
+    const cls = c.classification || {};
+    const meta = cls.metadata || {};
+    const action = cls.action || {};
+    const clsBadge = `cls-${cls.classification || 'unknown'}`;
+
+    card.innerHTML = `
+      <div class="detail-grid">
+        <div class="detail-main">
+          <div class="detail-meta">
+            <span class="badge ${clsBadge}">${cls.classification || '—'}</span>
+            <span class="meta-pill">${c.source}</span>
+            <span class="meta-pill">${cls.context_type || 'unknown'}</span>
+            <span class="meta-pill mono">id: ${c._id}</span>
+          </div>
+
+          ${c.parent_text ? `
+            <div class="parent-text">
+              <div class="label">↳ Reply to</div>
+              <div class="quote">"${escapeHtml(c.parent_text)}"</div>
+            </div>
+          ` : ''}
+
+          <div class="main-text">${escapeHtml(c.text)}</div>
+
+          <div class="reason-box">
+            <div class="label">Reasoning dari Gemini</div>
+            <div>${escapeHtml(cls.reason || '—')}</div>
+          </div>
+
+          <div class="action-row" style="margin-top: 16px;">
+            <button class="btn btn-primary" onclick="review('approve')">✓ Approve (benar)</button>
+            <button class="btn btn-danger" onclick="review('hide')">⊘ Hide</button>
+            <button class="btn btn-secondary" onclick="review('dismiss')">Dismiss</button>
+          </div>
+        </div>
+
+        <div class="detail-side">
+          <div class="kv-card">
+            <div class="kv-row"><span>Confidence</span><strong>${cls.confidence_score ?? '—'}%</strong></div>
+            <div class="kv-row"><span>Hate Score</span><strong>${cls.hate_score ?? '—'}</strong></div>
+            <div class="kv-row"><span>Is Hate</span><strong>${cls.is_hate_speech ? '✓' : '—'}</strong></div>
+            <div class="kv-row"><span>Is Islamic</span><strong>${cls.is_positive_islamic ? '✓' : '—'}</strong></div>
+            <div class="kv-row"><span>Sarcastic</span><strong>${meta.is_sarcastic ? '✓' : '—'}</strong></div>
+            <div class="kv-row"><span>Quote/Reply</span><strong>${meta.contains_quote_or_reply ? '✓' : '—'}</strong></div>
+            <div class="kv-row"><span>Language</span><strong>${meta.language || '—'}</strong></div>
+            <div class="kv-row"><span>Latency</span><strong>${c.latency_ms ?? '—'} ms</strong></div>
+            <div class="kv-row"><span>Model</span><strong class="mono">${c.model || '—'}</strong></div>
+            <div class="kv-row"><span>Prompt</span><strong class="mono">${c.prompt_version || '—'}</strong></div>
+          </div>
+
+          <div class="kv-card">
+            <div class="kv-row"><span>flag</span><strong>${action.flag ? '✓' : '—'}</strong></div>
+            <div class="kv-row"><span>hide</span><strong>${action.hide ? '✓' : '—'}</strong></div>
+            <div class="kv-row"><span>report_user</span><strong>${action.report_user ? '✓' : '—'}</strong></div>
+          </div>
+
+          ${(cls.detected_aspects && cls.detected_aspects.length) ? `
+            <div class="kv-card">
+              <div class="label">Detected aspects</div>
+              <div class="tags">
+                ${cls.detected_aspects.map(a => `<span class="tag">${escapeHtml(a)}</span>`).join('')}
+              </div>
+            </div>
+          ` : ''}
+
+          <div class="kv-card">
+            <div class="label">Tokens</div>
+            <div class="kv-row"><span>Input</span><strong>${c.token_usage?.prompt ?? '—'}</strong></div>
+            <div class="kv-row"><span>Output</span><strong>${c.token_usage?.completion ?? '—'}</strong></div>
+            <div class="kv-row"><span>Total</span><strong>${c.token_usage?.total ?? '—'}</strong></div>
+          </div>
+        </div>
+      </div>
+    `;
+  }
+
+  function escapeHtml(s) {
+    return String(s ?? '').replace(/[&<>"']/g, ch => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));
+  }
+
+  async function review(action) {
+    const reason = prompt(`Alasan untuk "${action}"?`) || `Manual ${action}`;
+    try {
+      const r = await fetch(`/api/comments/${commentId}/review`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ action, reason, reviewed_by: "admin" }),
+      });
+      const j = await r.json();
+      if (j.ok) {
+        alert("Saved.");
+        load();
+      } else {
+        alert("Error: " + j.error);
+      }
+    } catch (e) {
+      alert("Failed: " + e.message);
+    }
+  }
+
+  load();
+</script>

@@ -1,0 +1,129 @@
+<%- include('partials/header', { extraCss: 'x-monitor.css' }) %>
+
+<div class="page-header">
+  <div>
+    <h1>X Monitor</h1>
+    <p class="page-lede">Live browsing komentar X — auto-flag user ber-risiko tinggi dengan <strong style="color: var(--danger);">label merah</strong>.</p>
+  </div>
+  <div class="page-actions">
+    <button class="btn btn-secondary" onclick="loadStatus()">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/><path d="M3.51 9a9 9 0 0114.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0020.49 15"/>
+      </svg>
+      Refresh
+    </button>
+    <button class="btn btn-primary" id="btnScan" onclick="runScan()">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="run_in_background">
+        <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
+      </svg>
+      Scan X Sekarang
+    </button>
+  </div>
+</div>
+
+<!-- Mode banner -->
+<div id="modeBanner" class="banner">
+  <div class="banner-icon">
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/>
+    </svg>
+  </div>
+  <div>
+    <div class="banner-title" id="modeTitle">Checking X status...</div>
+    <div class="banner-desc" id="modeDesc"></div>
+  </div>
+</div>
+
+<!-- Stats grid -->
+<div class="stats-grid">
+  <div class="stat-card">
+    <div class="stat-label">X Tweets Di-scan</div>
+    <div class="stat-value" id="stat-scanned">—</div>
+    <div class="stat-sub" id="stat-scanned-sub">7 hari terakhir</div>
+  </div>
+  <div class="stat-card danger">
+    <div class="stat-label">User Ber-label Merah</div>
+    <div class="stat-value" id="stat-flagged">—</div>
+    <div class="stat-sub">high + critical</div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-label">Total User Dimonitor</div>
+    <div class="stat-value" id="stat-monitored">—</div>
+    <div class="stat-sub">dengan komen ter-klasifikasi</div>
+  </div>
+  <div class="stat-card accent">
+    <div class="stat-label">Last Scan</div>
+    <div class="stat-value" id="stat-last-scan" style="font-size: 18px;">—</div>
+    <div class="stat-sub" id="stat-last-scan-sub">—</div>
+  </div>
+</div>
+
+<div class="two-col">
+  <!-- Live feed -->
+  <div class="card">
+    <div class="card-header">
+      <h3>Live X Feed</h3>
+      <div class="filters">
+        <select id="feedMinHate" class="select" onchange="loadFeed()">
+          <option value="0">Semua hate score</option>
+          <option value="20">≥ 20</option>
+          <option value="40">≥ 40</option>
+          <option value="60" selected>≥ 60 (perlu flag)</option>
+          <option value="80">≥ 80 (auto-hide)</option>
+        </select>
+      </div>
+    </div>
+    <div id="liveFeed" class="feed-list">
+      <div class="empty">Loading...</div>
+    </div>
+  </div>
+
+  <!-- Flagged users with red labels -->
+  <div class="card">
+    <div class="card-header">
+      <h3>🚩 User Berisiko (Red Label)</h3>
+      <div class="filters">
+        <select id="filterRisk" class="select" onchange="loadUsers()">
+          <option value="">Semua level</option>
+          <option value="critical">Critical</option>
+          <option value="high">High</option>
+          <option value="medium">Medium</option>
+          <option value="low">Low</option>
+        </select>
+      </div>
+    </div>
+    <div id="flaggedUsers" class="user-list">
+      <div class="empty">Loading...</div>
+    </div>
+  </div>
+</div>
+
+<!-- Recent scans log -->
+<div class="card" style="margin-top: 24px;">
+  <div class="card-header">
+    <h3>Scan History</h3>
+    <span class="card-meta" id="scanCount">—</span>
+  </div>
+  <div id="scansList" class="scan-list">
+    <div class="empty">Loading...</div>
+  </div>
+</div>
+
+<!-- Action modal (hidden) -->
+<div id="actionModal" class="modal" style="display: none;">
+  <div class="modal-backdrop" onclick="closeModal()"></div>
+  <div class="modal-content">
+    <h3 id="modalTitle">Action</h3>
+    <p id="modalDesc" style="margin: 8px 0 16px; color: var(--text-secondary); font-size: 13.5px;"></p>
+    <label class="label">Alasan (opsional)</label>
+    <input type="text" id="modalReason" class="input" placeholder="Misal: 'Konsisten menyerang Islam'">
+    <div class="action-row">
+      <button class="btn btn-primary" id="modalConfirm" onclick="confirmAction()">Konfirmasi</button>
+      <button class="btn btn-secondary" onclick="closeModal()">Batal</button>
+    </div>
+  </div>
+</div>
+
+<%- include('partials/footer') %>
+
+<script src="/js/x-monitor.js"></script>

@@ -1,0 +1,64 @@
+<%- include('partials/header') %>
+
+<div class="page-header">
+  <div>
+    <h1>Live Test</h1>
+    <p class="page-lede">Tes classifier Gemini dengan komentar custom. Hasil langsung tersimpan ke MongoDB.</p>
+  </div>
+</div>
+
+<div class="test-grid">
+  <div class="card">
+    <div class="card-header">
+      <h3>Input</h3>
+      <span class="card-meta" id="testStatus">Ready</span>
+    </div>
+
+    <label class="label">Komentar (wajib)</label>
+    <textarea id="testText" class="textarea" rows="5" placeholder="Ketik atau paste komentar di sini..."></textarea>
+
+    <label class="label" style="margin-top: 14px;">Parent comment (opsional, untuk konteks reply)</label>
+    <textarea id="testParent" class="textarea" rows="2" placeholder="Komentar yang dibalas (untuk analisis konteks debat)"></textarea>
+
+    <div style="margin-top: 16px;">
+      <div class="label">Contoh cepat:</div>
+      <div class="chips" id="exampleChips">
+        <button class="chip" data-text="Islam itu agama teroris, semua muslim radikal">Islam = teroris</button>
+        <button class="chip" data-text='Ini nih orang ngomong "Islam agama teroris", jelas keliatan bodohnya'>Quote kritik</button>
+        <button class="chip" data-text="Oh pake jenggot ya? Siapa tau besok bawa ransel isi bom">Sarkasme</button>
+        <button class="chip" data-text="Subhanallah, MasyaAllah, jagalah ukhuwah">Dakwah</button>
+        <button class="chip" data-text="Saya kurang setuju dengan konsep poligami, menurut saya perlu dikaji ulang">Debat kritis</button>
+        <button class="chip" data-text="Dasar anjing lu, bodoh banget sih">Makian non-agama</button>
+      </div>
+    </div>
+
+    <div class="action-row">
+      <button class="btn btn-primary" id="btnClassify" onclick="runTest()">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <polygon points="5 3 19 12 5 21 5 3"/>
+        </svg>
+        Klasifikasi via Gemini
+      </button>
+      <button class="btn btn-secondary" onclick="clearTest()">Reset</button>
+    </div>
+
+    <div id="testLoading" class="test-loading" style="display: none;">
+      <div class="spinner"></div>
+      <div>Memanggil Gemini...</div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-header">
+      <h3>Hasil Klasifikasi</h3>
+      <span class="card-meta" id="resultMeta">—</span>
+    </div>
+    <div id="testResult" class="test-result">
+      <div class="empty">Belum ada hasil. Klik "Klasifikasi" untuk mulai.</div>
+    </div>
+  </div>
+</div>
+
+<%- include('partials/footer') %>
+
+<script src="/js/test.js"></script>

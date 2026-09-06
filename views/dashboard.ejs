@@ -1,0 +1,107 @@
+<%- include('partials/header') %>
+
+<div class="page-header">
+  <div>
+    <h1>Dashboard</h1>
+    <p class="page-lede">Moderasi real-time komentar X — klasifikasi otomatis oleh Gemini dengan konteks debat.</p>
+  </div>
+  <div class="page-actions">
+    <button class="btn btn-secondary" onclick="loadComments()">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/><path d="M3.51 9a9 9 0 0114.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0020.49 15"/>
+      </svg>
+      Refresh
+    </button>
+  </div>
+</div>
+
+<!-- Stats grid -->
+<div class="stats-grid" id="statsGrid">
+  <div class="stat-card">
+    <div class="stat-label">Total Komentar</div>
+    <div class="stat-value" id="stat-total">—</div>
+    <div class="stat-sub" id="stat-total-sub">loading...</div>
+  </div>
+  <div class="stat-card danger">
+    <div class="stat-label">Negatif (Hate)</div>
+    <div class="stat-value" id="stat-negative">—</div>
+    <div class="stat-sub" id="stat-negative-sub">—</div>
+  </div>
+  <div class="stat-card success">
+    <div class="stat-label">Positif (Islami)</div>
+    <div class="stat-value" id="stat-positive">—</div>
+    <div class="stat-sub" id="stat-positive-sub">—</div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-label">Review Queue</div>
+    <div class="stat-value" id="stat-queue">—</div>
+    <div class="stat-sub">hate_score ≥ 60</div>
+  </div>
+</div>
+
+<div class="two-col">
+  <!-- Distribution chart -->
+  <div class="card">
+    <div class="card-header">
+      <h3>Distribusi Klasifikasi</h3>
+      <span class="card-meta">All time</span>
+    </div>
+    <div class="chart-wrap">
+      <canvas id="distChart"></canvas>
+    </div>
+  </div>
+
+  <!-- Context breakdown -->
+  <div class="card">
+    <div class="card-header">
+      <h3>Konteks Debat</h3>
+      <span class="card-meta">v2.0 debate-aware</span>
+    </div>
+    <div id="contextList" class="context-list">
+      <div class="empty">Loading...</div>
+    </div>
+  </div>
+</div>
+
+<!-- Filters + list -->
+<div class="card" style="margin-top: 24px;">
+  <div class="card-header">
+    <h3>Komentar Terbaru</h3>
+    <div class="filters">
+      <select id="filterClass" class="select">
+        <option value="">Semua kelas</option>
+        <option value="negative">Negatif</option>
+        <option value="positive">Positif</option>
+        <option value="neutral">Netral</option>
+      </select>
+      <select id="filterContext" class="select">
+        <option value="">Semua konteks</option>
+        <option value="direct_attack">Direct attack</option>
+        <option value="quote_citation">Quote/Citation</option>
+        <option value="debate_critique">Debate critique</option>
+        <option value="academic_discussion">Akademis</option>
+        <option value="dakwah">Dakwah</option>
+        <option value="sarcasm_implicit">Sarkasme</option>
+        <option value="chitchat">Chitchat</option>
+      </select>
+      <select id="filterMinHate" class="select">
+        <option value="0">Hate score ≥ 0</option>
+        <option value="20">≥ 20</option>
+        <option value="40">≥ 40</option>
+        <option value="60" selected>≥ 60 (perlu review)</option>
+        <option value="80">≥ 80 (auto-hide)</option>
+      </select>
+      <input type="text" id="filterSearch" class="input" placeholder="Cari teks..." />
+    </div>
+  </div>
+
+  <div id="commentsList" class="comment-list">
+    <div class="empty">Loading comments...</div>
+  </div>
+
+  <div class="pagination" id="pagination"></div>
+</div>
+
+<%- include('partials/footer') %>
+
+<script src="/js/dashboard.js"></script>
