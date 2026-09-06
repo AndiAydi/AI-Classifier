@@ -1,0 +1,40 @@
+{
+  "name": "ai-classifier-system",
+  "version": "2.0.0",
+  "description": "Full-stack content moderation system for X — MongoDB + Gemini + debate-aware classification",
+  "main": "server.js",
+  "type": "commonjs",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node --watch server.js",
+    "seed": "node scripts/seed.js",
+    "test:classify": "node scripts/test-classify.js"
+  },
+  "keywords": [
+    "moderation",
+    "classifier",
+    "gemini",
+    "mongodb",
+    "hate-speech",
+    "islamic-content"
+  ],
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "@google/generative-ai": "^0.21.0",
+    "compression": "^1.7.4",
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.5",
+    "ejs": "^3.1.10",
+    "express": "^4.21.0",
+    "express-rate-limit": "^7.4.0",
+    "express-session": "^1.18.0",
+    "helmet": "^7.1.0",
+    "mongoose": "^8.7.0",
+    "morgan": "^1.10.0",
+    "nanoid": "^3.3.7"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}
