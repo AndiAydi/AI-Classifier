@@ -1,0 +1,23 @@
+  </main>
+
+  <script>
+    // Health check on load
+    fetch("/api/health")
+      .then(r => r.json())
+      .then(data => {
+        const el = document.getElementById("healthStatus");
+        if (!el) return;
+        const dot = el.querySelector(".status-dot");
+        const text = el.querySelector(".status-text");
+        const ok = data.db === "connected" && data.gemini === "ready";
+        dot.classList.toggle("ok", ok);
+        dot.classList.toggle("err", !ok);
+        text.textContent = ok ? "All systems ready" : (data.db !== "connected" ? "DB offline" : "Gemini error");
+      })
+      .catch(() => {
+        const el = document.getElementById("healthStatus");
+        if (el) el.querySelector(".status-text").textContent = "Offline";
+      });
+  </script>
+</body>
+</html>
