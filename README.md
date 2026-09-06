@@ -69,7 +69,7 @@ nano .env   # isi GEMINI_API_KEY
 
 ```bash
 docker compose up -d
-docker ps   # pastikan container ai_classifier_mongo jalan
+docker ps
 ```
 
 MongoDB admin UI tersedia di `http://localhost:8081`, credential default `admin/admin`.
